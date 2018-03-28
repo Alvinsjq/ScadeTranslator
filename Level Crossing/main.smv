@@ -1,0 +1,11 @@
+Module main
+
+VAR 
+	output : Integer;
+	m      : OpenArmGate(output);
+
+ASSIGN
+
+	m.CurrentPos := 0;
+	m.Incr.      := 10;
+

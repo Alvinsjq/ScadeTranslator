@@ -1,0 +1,14 @@
+Module OpenArmGate(NewPos)
+
+CONSTANT
+	OpenPosition :: 100
+
+IVAR
+	CurrentPos : Integer;
+	Incr : Integer;
+
+ASSIGN
+	NewPos := CurrentPos<=OpenPosition ? CurrentPos+Incr : CurrentPos;
+
+	
+
