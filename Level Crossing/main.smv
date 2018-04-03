@@ -1,11 +1,20 @@
-Module main
-
+MODULE main
 VAR 
-	output : Integer;
-	m      : OpenArmGate(output);
-
+	GatePosition : ClosedPosition..OpenPosition ;
+	Close : OpenArmGate(GatePosition) ;
+DEFINE
+	OpenPosition := 100 ;
+	ClosedPosition := 0 ;
+	
 ASSIGN
+	init(GatePosition) := 0 ;
+	next(GatePosition) := Close.NewPos ;
 
-	m.CurrentPos := 0;
-	m.Incr.      := 10;
-
+MODULE OpenArmGate(CurrentPos)
+VAR
+	NewPos : ClosedPosition..OpenPosition ;
+DEFINE
+	OpenPosition := 100 ;
+	ClosedPosition := 0 ;
+ASSIGN
+	NewPos :=  CurrentPos + 10 >= OpenPosition ?  OpenPosition : CurrentPos + 10  ;

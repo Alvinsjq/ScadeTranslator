@@ -1,0 +1,77 @@
+-- Function reposnsible for opening the arm gate.
+MODULE OpenArmGate(CurrentPos)
+VAR
+	NewPos : ClosedPosition..OpenPosition ;
+DEFINE
+	OpenPosition := 100 ;
+	ClosedPosition := 0 ;
+ASSIGN
+	NewPos :=  CurrentPos + 10 >= OpenPosition ?  OpenPosition : CurrentPos + 10  ;
+
+
+
+-- Function reposnsible for closing the arm gate.	
+MODULE ClosedArmGate(CurrentPos)
+VAR
+	NewPos : ClosedPosition..OpenPosition ;
+DEFINE
+	OpenPosition := 100 ;
+	ClosedPosition := 0 ;
+ASSIGN
+	NewPos :=  CurrentPos - 10 <= ClosedPosition ?  ClosedPosition : CurrentPos - 10 ;
+
+
+
+-- Root node managing responsible for the management of arm gate and traffic lights.
+MODULE main
+VAR
+	LightColour : { Green, Orange, RedNoTrain, RedTrain };
+	GatePosition : ClosedPosition..OpenPosition ;
+	Close : ClosedArmGate(GatePosition) ;
+	Open : OpenArmGate(GatePosition) ;
+DEFINE 
+	OpenPosition := 100 ;
+	ClosedPosition := 0 ;
+IVAR	
+	TrainInZone : boolean ;
+ASSIGN 
+
+	init(LightColour) := RedNoTrain ;
+	init(GatePosition) := OpenPosition ;
+
+	next(LightColour) := 
+			case	
+			(LightColour = RedNoTrain) & (TrainInZone = TRUE) : RedTrain ;
+			(LightColour = RedNoTrain) & (TrainInZone = FALSE) : Green ;
+
+-- (LightColour = RedTrain) & (TrainInZone = TRUE) : RedTrain ;
+			(LightColour = RedTrain) & (TrainInZone = FALSE) : Green ;
+			-- Green need to config
+			(LightColour = Green) &((GatePosition>=OpenPosition) | (TrainInZone = TRUE)) : Orange ;
+			
+			(LightColour = Orange) & (TrainInZone = TRUE) : RedTrain ;
+			(LightColour = Orange) & (TrainInZone = FALSE) : RedNoTrain ; 
+
+			TRUE : LightColour ;
+
+			esac ;
+	next(GatePosition) := 
+			case
+			(LightColour = RedNoTrain) & (TrainInZone = TRUE) &(GatePosition > ClosedPosition) :  Close.NewPos ; 
+			(LightColour = RedNoTrain) & (TrainInZone = FALSE) & (GatePosition < OpenPosition) : Open.NewPos ;
+
+			(LightColour = RedTrain) & (TrainInZone = TRUE)  & (GatePosition > ClosedPosition) : Close.NewPos ;
+			(LightColour = RedTrain) & (TrainInZone = FALSE) & (GatePosition < OpenPosition) : Open.NewPos ;
+
+			(LightColour = Green) & (GatePosition < OpenPosition) : Open.NewPos ;
+
+			(LightColour = Orange) & (TrainInZone = TRUE) & (GatePosition > ClosedPosition) : Close.NewPos ;
+			(LightColour = Orange) & (TrainInZone = FALSE)  : OpenPosition ;
+
+			TRUE : GatePosition ;
+
+			esac ;
+
+
+
+	
