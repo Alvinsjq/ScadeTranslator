@@ -8,8 +8,6 @@ DEFINE
 ASSIGN
 	NewPos :=  CurrentPos + 10 >= OpenPosition ?  OpenPosition : CurrentPos + 10  ;
 
-
-
 -- Function reposnsible for closing the arm gate.	
 MODULE ClosedArmGate(CurrentPos)
 VAR
@@ -20,8 +18,6 @@ DEFINE
 ASSIGN
 	NewPos :=  CurrentPos - 10 <= ClosedPosition ?  ClosedPosition : CurrentPos - 10 ;
 
-
-
 -- Root node managing responsible for the management of arm gate and traffic lights.
 MODULE main
 VAR
@@ -29,11 +25,12 @@ VAR
 	GatePosition : ClosedPosition..OpenPosition ;
 	Close : ClosedArmGate(GatePosition) ;
 	Open : OpenArmGate(GatePosition) ;
+IVAR
+	TrainInZone : boolean ;
 DEFINE 
 	OpenPosition := 100 ;
 	ClosedPosition := 0 ;
-IVAR	
-	TrainInZone : boolean ;
+
 ASSIGN 
 
 	init(LightColour) := RedNoTrain ;
@@ -71,6 +68,16 @@ ASSIGN
 			TRUE : GatePosition ;
 
 			esac ;
+
+
+
+CTLSPEC NAME
+-- when  the light is green and the gate is open , its next state is always orange;   
+	ctl_p_1 := AG(((LightColour = Green) & (GatePosition>=100)) -> AX(LightColour = Orange));
+
+LTLSPEC NAME
+-- before the light becomes red, the light must have been orange;
+	ltl_p_1 := (LightColour = Orange)  S  (LightColour = RedTrain | LightColour = RedNoTrain) ;
 
 
 

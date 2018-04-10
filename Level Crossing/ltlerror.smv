@@ -1,0 +1,9 @@
+MODULE main
+
+IVAR 
+	v1 : boolean;
+VAR
+	v2 : boolean;
+
+SPEC NAME
+	p1 := AG (v1 & v2);
