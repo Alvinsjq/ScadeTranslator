@@ -1,0 +1,32 @@
+MODULE Pre(input)
+VAR 
+	b : 0..10;
+ASSIGN
+	init(b) := 2;
+	next(b) := input;
+
+MODULE Fby_3(input)
+VAR
+	fby : 0..10;
+	pre_1 : Pre(input);
+	pre_2 : Pre(pre_1.b);
+	pre_3 : Pre(pre_2.b);
+ASSIGN
+	init(fby) := 2;
+	next(fby) := pre_3.b;
+
+
+MODULE main
+VAR 
+	x : 0..10;
+	fby_3 : Fby_3(x);
+	output : 0..10;
+ASSIGN
+	
+	init(x) := 1;
+	output := fby_3.pre_3.b;
+	next(x) := 
+		case 
+			x<10 : x+1;
+			TRUE  : x;
+		esac;

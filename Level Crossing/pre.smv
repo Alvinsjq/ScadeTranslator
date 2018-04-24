@@ -1,0 +1,26 @@
+MODULE Pre(input)
+
+VAR 
+	b : 0..20;
+ASSIGN
+	init(b) := 0;
+	next(b) := input;
+
+
+
+MODULE main
+
+VAR 
+	x : 0..10;
+	pre : Pre(x);
+	output : 0..20;
+
+ASSIGN
+	init(x) := 0;
+	output := pre.b;
+	next(x) :=
+		case 
+			x<10 : x+1;
+			TRUE : x ;
+		esac;	
+

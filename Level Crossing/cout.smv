@@ -1,0 +1,21 @@
+MODULE Pre_var(input)
+VAR 
+	pre_var : 0..100;
+ASSIGN
+	init(pre_var) := 0;
+	next(pre_var) := input;
+				
+
+-- count operator [ sum = 0 -> 5 + pre sum ]
+MODULE main
+VAR 
+	sum : 0..100;
+	pre : Pre_var(sum);
+	
+ASSIGN
+	init(sum) := 0;
+	next(sum) := 
+		case 
+			sum<20 & pre.pre_var<20 : pre.pre_var + 5;
+			TRUE : sum;
+		esac;	
